@@ -10,7 +10,6 @@ def swapCells(a, row0, col0, row1, col1):
     a[row0][col0], a[row1][col1] = a[row1][col1], a[row0][col0]
 
 class BoardState(object):
-
     def __init__(self, board):
         self.board = board
         self.rows, self.cols = len(board), len(board[0])
@@ -62,3 +61,33 @@ class BoardState(object):
 
     def __hash__(self):
         return hash(str(self))
+
+import Queue
+def bfs(initialState, targetState):
+	queue = Queue.Queue()
+	queue.put((initialState, []))
+
+	while not queue.empty():
+		state, moves = queue.get()
+		if state == targetState:
+			return moves
+		for childState, move in state.getChildStates():
+			queue.put((childState, moves + [move]))
+
+	return None
+
+def dfs(state, targetState, moves=[], seen=None):
+	if state == targetState:
+		return moves
+
+	if seen == None:
+		seen = set()
+	seen.add(state)
+
+	for childState, move in state.getChildStates():
+		if childState in seen: continue
+		result = dfs(childState, targetState, moves + [move], seen)
+		if result != None:
+			return result
+	
+	return None
