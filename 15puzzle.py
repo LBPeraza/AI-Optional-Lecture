@@ -140,12 +140,14 @@ def astar(initialState, targetState):
     queue = Queue.PriorityQueue()
     queue.put((initialState.manhatten(targetState),
                initialState, []))
-
+    seen = set()
     while not queue.empty():
         score, state, moves = queue.get()
         if state == targetState:
             return moves
         for childState, move in state.getChildStates():
-            queue.put((childState.manhatten(targetState),
-                       childState, moves + [move]))
+            if childState not in seen:
+                seen.add(childState)
+                queue.put((childState.manhatten(targetState),
+                           childState, moves + [move]))
     return None
