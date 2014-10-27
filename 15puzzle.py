@@ -89,34 +89,63 @@ class BoardState(object):
     def __hash__(self):
         return hash(str(self))
 
+    def manhatten(self, other):
+        otherPositions = { }
+        for row in xrange(other.rows):
+            for col in xrange(other.cols):
+                otherPositions[other.board[row][col]] = (row, col)
+
+        total = 0
+        for row in xrange(self.rows):
+            for col in xrange(self.cols):
+                value = self.board[row][col]
+                otherRow, otherCol = otherPositions[value]
+                total += abs(row - otherRow)
+                total += abs(col - otherCol)
+        return total
+
 import Queue
 def bfs(initialState, targetState):
-	queue = Queue.Queue()
-	queue.put((initialState, []))
+    queue = Queue.Queue()
+    queue.put((initialState, []))
 
-	while not queue.empty():
-		state, moves = queue.get()
-		if state == targetState:
-			return moves
-		for childState, move in state.getChildStates():
-			queue.put((childState, moves + [move]))
+    while not queue.empty():
+        state, moves = queue.get()
+        if state == targetState:
+            return moves
+        for childState, move in state.getChildStates():
+            queue.put((childState, moves + [move]))
 
-	return None
+    return None
 
-def dfs(state, targetState, moves=[], seen=None):
-	if state == targetState:
-		return moves
+def dfs(state, targetState, maxDepth, moves=[], seen=None):
+    if maxDepth == 0: return None
+    if state == targetState:
+        return moves
 
-	if seen == None:
-		seen = set()
-	seen.add(state)
+    if seen == None:
+        seen = set()
+    seen.add(state)
 
-	for childState, move in state.getChildStates():
-		if childState in seen: continue
-		result = dfs(childState, targetState, moves + [move], seen)
-		if result != None:
-			return result
-	
-	return None
+    for childState, move in state.getChildStates():
+        if childState in seen: continue
+        result = dfs(childState, targetState, maxDepth-1,
+                     moves + [move], seen)
+        if result != None:
+            return result
+    
+    return None
 
+def astar(initialState, targetState):
+    queue = Queue.PriorityQueue()
+    queue.put((initialState.manhatten(targetState),
+               initialState, []))
 
+    while not queue.empty():
+        score, state, moves = queue.get()
+        if state == targetState:
+            return moves
+        for childState, move in state.getChildStates():
+            queue.put((childState.manhatten(targetState),
+                       childState, moves + [move]))
+    return None
