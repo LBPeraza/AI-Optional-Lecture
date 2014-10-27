@@ -12,3 +12,7 @@ class Connect4State(object):
     # returns [(childState, column)]
     def getChildStates(self, currentPlayer):
         pass
+
+    # high score is better
+    def getScore(self, currentPlayer):
+        pass
