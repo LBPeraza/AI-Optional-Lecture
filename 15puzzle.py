@@ -4,34 +4,61 @@
 #
 # For AI Optional Lecture for 15-112 F14
 
-import copy
+import copy, random
 
 def swapCells(a, row0, col0, row1, col1):
     a[row0][col0], a[row1][col1] = a[row1][col1], a[row0][col0]
 
 class BoardState(object):
+    @staticmethod
+    def solvedBoard(size):
+        board = [[0] * size for _ in xrange(size)]
+        for row in xrange(size):
+            for col in xrange(size):
+                val = (row * size + col) + 1
+                board[row][col] = val
+        board[size-1][size-1] = 0
+        return BoardState(board)
+
+    @staticmethod
+    def randomBoard(size, iters=20):
+        board = BoardState.solvedBoard(size)
+        moves = 0
+        dirs = ["L", "R", "U", "D"]
+        while moves < iters:
+            move = random.choice(dirs)
+            if board.doMove(move):
+                moves += 1
+        return board
+
     def __init__(self, board):
         self.board = board
         self.rows, self.cols = len(board), len(board[0])
+        self.holeRow, self.holeCol = self.findHole()
 
     # returns list of tuples of (child state, move)
     def getChildStates(self):
-        holeRow, holeCol = self.findHole()
-        moves = [
-            ("L", (0, -1)),
-            ("R", (0, +1)),
-            ("U", (-1, 0)),
-            ("D", (+1, 0))
-            ]
+        moves = ["L", "R", "U", "D"]
         children = []
-        for (move, (drow, dcol)) in moves:
-            newRow, newCol = holeRow + drow, holeCol + dcol
-            if ((0 <= newRow < self.rows) and
-                (0 <= newCol < self.cols)):
-                newBoard = copy.deepcopy(self.board)
-                swapCells(newBoard, holeRow, holeCol, newRow, newCol)
-                children.append((BoardState(newBoard), move))
+        for move in moves:
+            newBoardState = BoardState(copy.deepcopy(self.board))
+            if (newBoardState.doMove(move)):
+                children.append((newBoardState, move))
         return children
+
+    def doMove(self, move):
+        holeRow, holeCol = self.findHole()
+        drow, dcol = 0, 0
+        if "L" in move: dcol -= 1
+        elif "R" in move: dcol += 1
+        if "U" in move: drow -= 1
+        elif "D" in move: drow += 1
+        newRow, newCol = holeRow + drow, holeCol + dcol
+        if ((0 <= newRow < self.rows) and
+            (0 <= newCol < self.cols)):
+            swapCells(self.board, holeRow, holeCol, newRow, newCol)
+            return True
+        return False, None
 
     def findHole(self):
         for i in xrange(self.rows):
@@ -91,3 +118,5 @@ def dfs(state, targetState, moves=[], seen=None):
 			return result
 	
 	return None
+
+
