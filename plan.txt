@@ -1,14 +1,27 @@
-- Draw 15 puzzle
-- Show tree diagram
-## WRITE CODE FOR STATES ##
-- BFS
+- Intro (just a search, not machine learning) - Aaron 5 mins
+- Draw 15 puzzle - Aaron 5 mins
+- Show tree diagram - Aaron 5 mins
+## WRITE CODE FOR STATES ## - Aaron 10 mins
+  - implement getChildStates and doMove
+
+- BFS - Lukas 10 mins
 ## GIVEN START/END, FIND PATH ##
-- DFS
+- DFS - Lukas 10 mins
     - cycles / seen set
 ## IMPLEMENT DFS ##
-- introduce heuristic
+
+- introduce heuristic - Lukas 10 mins
 ## WRITE HEURISTIC, ADD TO STATE CLASS ##
 - introduce A*
     - combining good parts of BFS/DFS, plus heuristic
 - greedy DFS won't work
 
+2-player ai
+- Introduce minimax - Aaron 5 mins
+- Draw tree - Aaron 10 mins
+### Implement Connect4 States ### - Aaron 10 mins
+### Implement Minimax (without objective) ### - Aaron 10 mins
+
+- Talk about objective fn - Lukas 10 mins
+### Implement objective fn ### - Lukas 10 mins
+- Run with graphics - Lukas 5 mins
