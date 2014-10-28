@@ -94,7 +94,7 @@ class Connect4State(object):
 
 
 # returns column of move which minimizes maximum loss
-def minimax(board, player, depth=6):
+def minimax(board, player, depth=5):
     maximizing = player == 1
     state, column, score = minimaxAlgo(board, player, depth, maximizing)
     return column
@@ -121,3 +121,24 @@ def minimaxAlgo(state, player, depth, maximizing):
                 choiceScore = score
         return choice, choiceCol, choiceScore
 
+
+s = Connect4State([[0 for col in xrange(7)] for row in xrange(6)])
+player = 1
+
+while True:
+    if s.getScore(1) == WINVALUE:
+        print "You win!"
+        break
+    elif s.getScore(2) == WINVALUE:
+        print "You lost!"
+        break
+    print s
+    print
+    if player == 1:
+        move = int(raw_input("Enter column: "))
+        s = s.makeMove(move, 1)
+    else:
+        print "Thinking..."
+        move = minimax(s, 2)
+        s = s.makeMove(move, 2)
+    player = s.otherPlayer(player)
