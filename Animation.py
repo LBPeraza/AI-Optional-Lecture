@@ -12,7 +12,7 @@ class Animation(object):
     def init(self): pass
     def redrawAll(self): pass
     
-    def run(self, width=300, height=300):
+    def run(self, width=300, height=300, timerFiredDelay=250):
         # create the root and the canvas
         root = Tk()
         self.width = width
@@ -34,7 +34,7 @@ class Animation(object):
         root.bind("<Button-1>", mousePressedWrapper)
         root.bind("<Key>", keyPressedWrapper)
         root.bind("<Motion>", mouseMovedWrapper)
-        self.timerFiredDelay = 250 # milliseconds
+        self.timerFiredDelay = timerFiredDelay # milliseconds
         def timerFiredWrapper():
             self.timerFired()
             redrawAllWrapper()
