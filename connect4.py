@@ -1,4 +1,4 @@
-# 15puzzle.py
+# connect4.py
 # Lukas Peraza (lbp)
 # Aaron Perley (aperley)
 #
@@ -6,7 +6,7 @@
 
 import copy
 
-WINVALUE = 10000
+WINVALUE = 1000000
 
 class Connect4State(object):
     def __init__(self, board):
@@ -53,7 +53,7 @@ class Connect4State(object):
         elif max(otherLines) >= 4:
             return -WINVALUE
         else:
-            return sum(myLines) - sum(otherLines) / 2.0
+            return sum(myLines) - sum(otherLines)
 
     def countLines(self, player):
         values = []

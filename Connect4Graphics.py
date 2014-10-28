@@ -1,4 +1,4 @@
-# BoardGame.py
+# Connect4Graphics.py
 
 from Tkinter import *
 from Animation import Animation
