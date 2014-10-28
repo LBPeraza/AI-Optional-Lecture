@@ -16,3 +16,14 @@ class Connect4State(object):
     # high score is better
     def getScore(self, currentPlayer):
         pass
+
+# returns (Connect4State, column) of best move
+def minimax(board, player, depth=5, maximizing=True):
+    if (depth < 1): raise Exception("minimax error")
+    elif (depth == 1):
+        return board
+    else:
+        choice = None
+        choiceScore = None
+        for childState, column in board.getChildStates():
+            
