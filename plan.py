@@ -1,1 +1,0 @@
-- Draw 15 puzzle
