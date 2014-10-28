@@ -1,4 +1,4 @@
-# 15puzzle.py
+# connect4.py
 # Lukas Peraza (lbp)
 # Aaron Perley (aperley)
 #
