@@ -14,10 +14,18 @@ class Connect4(Animation):
         self.width, self.height = cols * self.cellSize, rows * self.cellSize
         self.rows, self.cols = rows, cols
         self.state = connect4.Connect4State.new(rows, cols)
+        #self.state = connect4.Connect4State([[0, 0, 0, 0, 0, 0, 0],
+        #           [0, 0, 0, 0, 0, 0, 0],
+        #           [1, 0, 0, 2, 0, 0, 0],
+        #           [2, 0, 2, 1, 0, 0, 0],
+        #           [2, 0, 1, 1, 0, 0, 0],
+        #           [2, 2, 1, 1, 0, 0, 0]])
         self.player = 1
         self.colors = [None, "blue", "red"]
         self.hoverColumn = None
         self.ai = ai
+        self.gameOver = False
+        self.winner = None
 
     def run(self):
         super(Connect4, self).run(width=self.width, height=self.height)
@@ -25,6 +33,9 @@ class Connect4(Animation):
     def redrawAll(self):
         #self.canvas.create_rectangle(0, 0, self.width, self.height)
         self.drawBoard()
+        if self.gameOver:
+            self.canvas.create_text(self.width/2, self.height/2,
+                text="Player %d wins!" % self.winner, font="Arial 30 bold")
 
     def drawBoard(self):
         for row in xrange(self.rows):
@@ -53,6 +64,7 @@ class Connect4(Animation):
             self.hoverColumn = None
 
     def mousePressed(self, event):
+        if self.gameOver: return
         if self.player != 1: return
         col = self.getMouseCol(event.x)
         if col != None:
@@ -75,7 +87,9 @@ class Connect4(Animation):
             self.player = self.state.otherPlayer(self.player)
 
     def checkForWin(self):
-        pass
+        if abs(self.state.getScore(1)) == connect4.WINVALUE:
+            self.gameOver = True
+            self.winner = 1 if self.state.getScore(1) > 0 else 2
 
 c = Connect4(6, 7, connect4.minimax)
 c.run()
