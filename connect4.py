@@ -4,44 +4,120 @@
 #
 # For AI Optional Lecture for 15-112 F14
 
+import copy
+
 WINVALUE = 10000
 
 class Connect4State(object):
-    def __init__(self, rows, cols):
-        pass
+    def __init__(self, board):
+        self.board = board
+        self.rows, self.cols = len(self.board), len(self.board[0])
 
     # 0 = empty, 1 = player 1, 2 = player 2
     # returns [(childState, column)]
     def getChildStates(self, currentPlayer):
-        pass
+        states = []
+        for col in xrange(self.cols):
+            newState = self.makeMove(col, currentPlayer)
+            if newState != None:
+                states.append((newState, col))
+        return states
+
+    def makeMove(self, col, player):
+        row = self.getRow(col)
+        if row == None: return None
+        newBoard = copy.deepcopy(self.board)
+        newBoard[row][col] = player
+        return Connect4State(newBoard)
+
+
+    def getRow(self, col):
+        for row in xrange(self.rows-1, -1, -1):
+            if self.board[row][col] == 0: return row
+        return None
+
+    def otherPlayer(self, player):
+        return 2 if player == 1 else 1
+
 
     # high score is better
     def getScore(self, currentPlayer):
-        pass
+        myLines = self.countLines(currentPlayer)
+        otherLines = self.countLines(self.otherPlayer(currentPlayer))
+        if max(myLines) >= 4:
+            return WINVALUE
+        elif max(otherLines) >= 4:
+            return -WINVALUE
+        else:
+            return sum(myLines) - sum(otherLines)
+
+    def countLines(self, player):
+        values = []
+        for row in xrange(self.rows):
+            for col in xrange(self.cols):
+                self.countLinesFromCell(row, col, player, values)
+        return values
+
+
+    def countLinesFromCell(self, row, col, player, values):
+        dirs = [(-1, -1), (-1, 0), (-1, 1),
+                ( 0, -1),          ( 0, 1),
+                ( 1, -1), ( 1, 0), ( 1, 1)]
+        for drow, dcol in dirs:
+            values.append(self.countLineInDirection(row, col, drow, dcol, player))
+
+    def countLineInDirection(self, row, col, drow, dcol, player):
+        length = 0
+        while ((0 <= row < self.rows) and
+               (0 <= col < self.cols) and
+               self.board[row][col] == player):
+            length += 1
+            row += drow
+            col += dcol
+        return length
+
+
+    def __str__(self):
+        maxWidth = 0
+        for row in self.board:
+            for val in row:
+                maxWidth = max(maxWidth, len(str(val)))
+        result = ""
+        format = "%%%dd" % (maxWidth+1)
+        for row in self.board:
+            result += "["
+            for i in xrange(self.cols):
+                result += format % row[i]
+                if (i < self.cols - 1): result += ","
+            result += "]\n"
+        return result.strip()
+
 
 # returns column of move which minimizes maximum loss
-def minimax(board, player, depth=5):
-    state, column, score = minimaxAlgo(board, player, depth)
+def minimax(board, player, depth=6):
+    maximizing = player == 1
+    state, column, score = minimaxAlgo(board, player, depth, maximizing)
     return column
 
 # returns (Connect4State, column, score) of best move
-def minimaxAlgo(board, player, depth=5, maximizing=True):
+def minimaxAlgo(state, player, depth, maximizing):
     if (depth < 1): raise Exception("minimax error")
     elif (depth == 1):
-        return board
+        return (state, None, state.getScore(1))
+    elif (abs(state.getScore(1)) == WINVALUE):
+        return (state, None, state.getScore(1))
     else:
         choice = None
         choiceCol = None
         choiceScore = None
-        for childState, column in board.getChildStates():
-            childScore = childState.getScore(player)
-            if abs(childScore) == WINVALUE:
-                return childState, column, childScore
-            childScore = minimaxAlgo(board, player, depth-1, not maximizing)
+        for childState, column in state.getChildStates(player):
+            bestState, bestCol, score = minimaxAlgo(childState, childState.otherPlayer(player),
+                                            depth-1, not maximizing)
             if (choice == None or
-                (maximizing and childScore > choiceScore) or
-                (not maximizing and childScore < choiceScore)):
+                (maximizing and score > choiceScore) or
+                (not maximizing and score < choiceScore)):
                 choice = childState
                 choiceCol = column
-                choiceScore = childScore
+                choiceScore = score
         return choice, choiceCol, choiceScore
+
