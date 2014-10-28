@@ -13,6 +13,10 @@ class Connect4State(object):
         self.board = board
         self.rows, self.cols = len(self.board), len(self.board[0])
 
+    @classmethod
+    def new(cls, rows=6, cols=7):
+        return cls([[0]*cols for row in xrange(rows)])
+
     # 0 = empty, 1 = player 1, 2 = player 2
     # returns [(childState, column)]
     def getChildStates(self, currentPlayer):
@@ -49,7 +53,7 @@ class Connect4State(object):
         elif max(otherLines) >= 4:
             return -WINVALUE
         else:
-            return sum(myLines) - sum(otherLines)
+            return sum(myLines) - sum(otherLines) / 2.0
 
     def countLines(self, player):
         values = []
@@ -121,7 +125,7 @@ def minimaxAlgo(state, player, depth, maximizing):
                 choiceScore = score
         return choice, choiceCol, choiceScore
 
-
+"""
 s = Connect4State([[0 for col in xrange(7)] for row in xrange(6)])
 player = 1
 
@@ -142,3 +146,4 @@ while True:
         move = minimax(s, 2)
         s = s.makeMove(move, 2)
     player = s.otherPlayer(player)
+"""
